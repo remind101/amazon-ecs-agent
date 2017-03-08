@@ -1,6 +1,6 @@
 # Amazon ECS Container Agent
 
-This builds an Amazone ECS Container Agent, with some patches applied for Remind's use.
+This builds an Amazon ECS Container Agent, with some patches applied for Remind's use.
 
 ## Patches
 
