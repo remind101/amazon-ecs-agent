@@ -2,7 +2,7 @@ FROM golang:1.7
 MAINTAINER Remind Inc
 
 # A git tag to apply the patches to.
-ENV AMAZON_ECS_AGENT_REV=v1.14.0
+ARG AMAZON_ECS_AGENT_REV
 
 RUN mkdir -p /go/src/github.com/aws/
 RUN cd /go/src/github.com/aws/ && \
