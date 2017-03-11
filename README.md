@@ -9,4 +9,4 @@ This builds an Amazon ECS Container Agent, with some patches applied for Remind'
 ## Updating to a new release
 
 1. Bump `REVISION` in [Makefile](./Makefile)
-2. Build the docker image again.
+2. Run `make bin/amazon-ecs-agent` again.
