@@ -1,6 +1,8 @@
 FROM golang:1.7
 MAINTAINER Remind Inc
 
+RUN apt-get update && apt-get install -y patch
+
 # A git tag to apply the patches to.
 ARG AMAZON_ECS_AGENT_REV
 
@@ -12,7 +14,6 @@ RUN cd /go/src/github.com/aws/ && \
 
 WORKDIR /go/src/github.com/aws/amazon-ecs-agent
 
-RUN apt-get update && apt-get install -y patch
 COPY patches ./patches
 RUN for patch in patches/*; do patch -p1 < $patch; done
 RUN ./scripts/build true /agent
