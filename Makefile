@@ -1,6 +1,6 @@
 .PHONY: build
 
-REVISION=v1.14.2
+REVISION=v1.14.3
 IMAGE=remind101/amazone-ecs-agent:${REVISION}
 
 build:
