@@ -1,0 +1,81 @@
+diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
+index 8330c89..1cdca1f 100644
+--- a/agent/engine/docker_task_engine.go
++++ b/agent/engine/docker_task_engine.go
+@@ -35,6 +35,7 @@ import (
+ 	utilsync "github.com/aws/amazon-ecs-agent/agent/utils/sync"
+ 	"github.com/aws/amazon-ecs-agent/agent/utils/ttime"
+ 	"github.com/cihub/seelog"
++	docker "github.com/fsouza/go-dockerclient"
+ )
+ 
+ const (
+@@ -577,6 +578,13 @@ func (engine *DockerTaskEngine) createContainer(task *api.Task, container *api.C
+ 		return DockerContainerMetadata{Error: api.NamedError(err)}
+ 	}
+ 
++	// docker run supports a --pids-limit flag, which replaces the nproc
++	// limit with a container aware version. In almost all circumstances,
++	// noproc should not be used, since it's global.
++	//
++	// See https://github.com/moby/moby/pull/18697
++	coercePidsLimit(hostConfig)
++
+ 	// Augment labels with some metadata from the agent. Explicitly do this last
+ 	// such that it will always override duplicates in the provided raw config
+ 	// data.
+@@ -859,3 +867,20 @@ func (engine *DockerTaskEngine) isParallelPullCompatible() bool {
+ 
+ 	return false
+ }
++
++func coercePidsLimit(config *docker.HostConfig) {
++	idx := -1
++	for i, l := range config.Ulimits {
++		if l.Name == "nproc" {
++			idx = i
++			break
++		}
++	}
++
++	if idx < 0 {
++		return
++	}
++
++	config.PidsLimit = config.Ulimits[idx].Soft
++	config.Ulimits = append(config.Ulimits[:idx], config.Ulimits[idx+1:]...)
++}
+diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
+index ec05b89..52f071d 100644
+--- a/agent/engine/docker_task_engine_test.go
++++ b/agent/engine/docker_task_engine_test.go
+@@ -1203,3 +1203,29 @@ func TestTaskWithCircularDependency(t *testing.T) {
+ 	_, ok = taskEngine.(*DockerTaskEngine).managedTasks[task.Arn]
+ 	assert.False(t, ok, "Task should not be added to task manager for processing")
+ }
++
++func TestCoercePidsLimit(t *testing.T) {
++	config := &docker.HostConfig{
++		Ulimits: []docker.ULimit{
++			{Name: "nproc", Soft: 90, Hard: 90},
++		},
++	}
++
++	coercePidsLimit(config)
++	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, 0, len(config.Ulimits))
++	assert.Equal(t, []docker.ULimit{}, config.Ulimits)
++
++	nofile := docker.ULimit{Name: "nofile", Soft: 100, Hard: 100}
++	config = &docker.HostConfig{
++		Ulimits: []docker.ULimit{
++			nofile,
++			{Name: "nproc", Soft: 90, Hard: 90},
++		},
++	}
++
++	coercePidsLimit(config)
++	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, 1, len(config.Ulimits))
++	assert.Equal(t, []docker.ULimit{nofile}, config.Ulimits)
++}
