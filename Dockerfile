@@ -11,12 +11,16 @@ RUN cd /go/src/github.com/aws/ && \
       git clone git://github.com/aws/amazon-ecs-agent.git && \
       cd amazon-ecs-agent && \
       git checkout $AMAZON_ECS_AGENT_REV
+RUN cd /go/src/github.com/aws/amazon-ecs-agent && \
+      git submodule update --init --checkout && \
+      mv /go/src/github.com/aws/amazon-ecs-agent/amazon-ecs-cni-plugins /go/src/github.com/aws/amazon-ecs-cni-plugins
 
 WORKDIR /go/src/github.com/aws/amazon-ecs-agent
 
 COPY patches ./patches
 RUN for patch in patches/*; do patch -p1 < $patch; done
-RUN ./scripts/build true /agent
-
-EXPOSE 51678 51679
-ENTRYPOINT ["/agent"]
+RUN mkdir /out
+RUN ./scripts/build true /out/amazon-ecs-agent
+RUN cd ../amazon-ecs-cni-plugins && \
+      make plugins && \
+      mv /go/src/github.com/aws/amazon-ecs-cni-plugins/bin/plugins /out/plugins

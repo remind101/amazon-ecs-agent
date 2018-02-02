@@ -1,16 +1,8 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 9a9f3a3..cd5171d 100644
+index 25866f4..af8470e 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -17,6 +17,7 @@ package engine
- import (
- 	"errors"
- 	"fmt"
-+	"strconv"
- 	"sync"
- 	"time"
- 
-@@ -548,6 +549,16 @@ func (engine *DockerTaskEngine) createContainer(task *api.Task, container *api.C
+@@ -707,6 +707,16 @@ func (engine *DockerTaskEngine) createContainer(task *api.Task, container *api.C
  		return DockerContainerMetadata{Error: api.NamedError(err)}
  	}
  
@@ -28,15 +20,15 @@ index 9a9f3a3..cd5171d 100644
  	// such that it will always override duplicates in the provided raw config
  	// data.
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index cc6523c..3818f25 100644
+index e8362f5..c3ead7c 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
-@@ -675,6 +675,40 @@ func TestCreateContainerMergesLabels(t *testing.T) {
+@@ -1242,6 +1242,41 @@ func TestCreateContainerMergesLabels(t *testing.T) {
  	taskEngine.(*DockerTaskEngine).createContainer(testTask, testTask.Containers[0])
  }
  
 +func TestCreateContainerAllowsExtraDockerConfigInLabels(t *testing.T) {
-+	ctrl, client, _, taskEngine, _, _ := mocks(t, &defaultConfig)
++	ctrl, client, _, taskEngine, _, _, _ := mocks(t, &defaultConfig)
 +	defer ctrl.Finish()
 +
 +	testTask := &api.Task{
@@ -52,7 +44,7 @@ index cc6523c..3818f25 100644
 +			},
 +		},
 +	}
-+	expectedConfig, err := testTask.DockerConfig(testTask.Containers[0])
++	expectedConfig, err := testTask.DockerConfig(testTask.Containers[0], defaultDockerClientAPIVersion)
 +	if err != nil {
 +		t.Fatal(err)
 +	}
@@ -65,6 +57,7 @@ index cc6523c..3818f25 100644
 +		"com.amazonaws.ecs.task-definition-version": "1",
 +		"com.amazonaws.ecs.cluster":                 "",
 +	}
++	client.EXPECT().APIVersion().Return(defaultDockerClientAPIVersion, nil).AnyTimes()
 +	client.EXPECT().CreateContainer(expectedConfig, gomock.Any(), gomock.Any(), gomock.Any())
 +	taskEngine.(*DockerTaskEngine).createContainer(testTask, testTask.Containers[0])
 +}
