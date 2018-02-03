@@ -21,6 +21,3 @@ COPY patches ./patches
 RUN for patch in patches/*; do patch -p1 < $patch; done
 RUN mkdir /out
 RUN ./scripts/build true /out/amazon-ecs-agent
-RUN cd ../amazon-ecs-cni-plugins && \
-      make plugins && \
-      mv /go/src/github.com/aws/amazon-ecs-cni-plugins/bin/plugins /out/plugins

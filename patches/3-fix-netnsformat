@@ -1,0 +1,13 @@
+diff --git a/agent/ecscni/types.go b/agent/ecscni/types.go
+index 2d408c5..e4274a6 100644
+--- a/agent/ecscni/types.go
++++ b/agent/ecscni/types.go
+@@ -29,7 +29,7 @@ const (
+ 	// communicate with ecs-agent
+ 	defaultBridgeName = "ecs-bridge"
+ 	// netnsFormat is used to construct the path to cotainer network namespace
+-	netnsFormat = "/host/proc/%s/ns/net"
++	netnsFormat = "/proc/%s/ns/net"
+ 	// ecsSubnet is the available ip addresses to use for task networking
+ 	ecsSubnet = "169.254.172.0/22"
+ 
