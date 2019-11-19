@@ -6,7 +6,7 @@ index 25866f4..ad9ae8a 100644
  	"github.com/aws/amazon-ecs-agent/agent/utils"
  	utilsync "github.com/aws/amazon-ecs-agent/agent/utils/sync"
  	"github.com/aws/amazon-ecs-agent/agent/utils/ttime"
-+	docker "github.com/fsouza/go-dockerclient"
++	dockercontainer "github.com/docker/docker/api/types/container"
  
  	"github.com/cihub/seelog"
  	"github.com/pkg/errors"
@@ -29,7 +29,7 @@ index 25866f4..ad9ae8a 100644
  	}
  }
 +
-+func coercePidsLimit(config *docker.HostConfig) {
++func coercePidsLimit(config *dockercontainer.HostConfig) {
 +	idx := -1
 +	for i, l := range config.Ulimits {
 +		if l.Name == "nproc" {
