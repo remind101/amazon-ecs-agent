@@ -1,8 +1,11 @@
 .PHONY: build
 
-REVISION=v1.18.0
+REVISION=v1.33.0
 BUILD_IMAGE=remind101/amazon-ecs-agent:${REVISION}
 OFFICIAL_IMAGE=amazon/amazon-ecs-agent:${REVISION}
+
+PAUSE_CONTAINER_TAG=0.1.0
+PAUSE_CONTAINER_IMAGE=amazon/amazon-ecs-pause
 
 amazon-ecs-agent.tar.gz: amazon-ecs-agent
 	tar -czvf $@ amazon-ecs-agent
@@ -36,7 +39,10 @@ amazon-ecs-agent/images: FORCE
 # Builds the ECS agent binary.
 build:
 	docker pull ${OFFICIAL_IMAGE}
-	docker build --build-arg AMAZON_ECS_AGENT_REV=${REVISION} -t ${BUILD_IMAGE} .
+	docker build --build-arg AMAZON_ECS_AGENT_REV=${REVISION} \
+	    --build-arg LDFLAGS="-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerTag=${PAUSE_CONTAINER_TAG} \
+			-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerImageName=${PAUSE_CONTAINER_IMAGE}" \
+      -t ${BUILD_IMAGE} .
 
 clean:
 	rm -rf amazon-ecs-agent

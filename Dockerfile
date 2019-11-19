@@ -1,10 +1,13 @@
-FROM golang:1.7
+FROM golang:1.8
 MAINTAINER Remind Inc
 
 RUN apt-get update && apt-get install -y patch
 
 # A git tag to apply the patches to.
 ARG AMAZON_ECS_AGENT_REV
+
+# make sure we pass the build flags from the Makefile.
+ARG LDFLAGS
 
 RUN mkdir -p /go/src/github.com/aws/
 RUN cd /go/src/github.com/aws/ && \
