@@ -1,17 +1,17 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 25866f4..ad9ae8a 100644
+index 2c2e6e5c..e3740a9b 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -34,6 +34,7 @@ import (
- 	"github.com/aws/amazon-ecs-agent/agent/utils"
+@@ -49,6 +49,7 @@ import (
  	utilsync "github.com/aws/amazon-ecs-agent/agent/utils/sync"
  	"github.com/aws/amazon-ecs-agent/agent/utils/ttime"
+ 	dockercontainer "github.com/docker/docker/api/types/container"
 +	dockercontainer "github.com/docker/docker/api/types/container"
  
  	"github.com/cihub/seelog"
- 	"github.com/pkg/errors"
-@@ -707,6 +708,13 @@ func (engine *DockerTaskEngine) createContainer(task *api.Task, container *api.C
- 		return DockerContainerMetadata{Error: api.NamedError(err)}
+ 	"github.com/docker/docker/api/types"
+@@ -984,6 +985,20 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
+ 		return dockerapi.DockerContainerMetadata{Error: apierrors.NamedError(err)}
  	}
  
 +	// docker run supports a --pids-limit flag, which replaces the nproc
@@ -24,9 +24,9 @@ index 25866f4..ad9ae8a 100644
  	// Augment labels with some metadata from the agent. Explicitly do this last
  	// such that it will always override duplicates in the provided raw config
  	// data.
-@@ -1036,3 +1044,20 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *api.Task, cont *api.Doc
- 		seelog.Debugf("Updated metadata file for container %s of task %s", cont.Container.Name, task.Arn)
+@@ -1405,3 +1420,20 @@ func getContainerHostIP(networkSettings *types.NetworkSettings) (string, bool) {
  	}
+ 	return "", false
  }
 +
 +func coercePidsLimit(config *dockercontainer.HostConfig) {
@@ -46,12 +46,12 @@ index 25866f4..ad9ae8a 100644
 +	config.Ulimits = append(config.Ulimits[:idx], config.Ulimits[idx+1:]...)
 +}
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index e8362f5..d7028a1 100644
+index e3ad30b9..e2897b1a 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
-@@ -2238,3 +2238,29 @@ func TestPullStoppedAtWasSetCorrectlyWhenPullFail(t *testing.T) {
- 	assert.Equal(t, testTask.PullStartedAt, startTime1)
- 	assert.Equal(t, testTask.PullStoppedAt, stopTime3)
+@@ -3040,3 +3040,29 @@ func TestStartFirelensContainerRetryForContainerIP(t *testing.T) {
+ 	assert.NoError(t, ret.Error)
+ 	assert.Equal(t, jsonBaseWithNetwork.NetworkSettings, ret.NetworkSettings)
  }
 +
 +func TestCoercePidsLimit(t *testing.T) {
