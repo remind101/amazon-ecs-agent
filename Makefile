@@ -26,14 +26,14 @@ amazon-ecs-agent/amazon-ecs-agent: build
 amazon-ecs-agent/plugins: FORCE
 	mkdir -p amazon-ecs-agent
 	$(eval ID := $(shell docker create ${OFFICIAL_IMAGE}))
-	docker cp ${ID}:/amazon-ecs-cni-plugins $@
+	docker cp ${ID}:/amazon-ecs-cni-plugins/. $@
 	docker rm ${ID}
 
 # Copies the amazon-ecs-pause container image from the official Docker image.
 amazon-ecs-agent/images: FORCE
 	mkdir -p amazon-ecs-agent
 	$(eval ID := $(shell docker create ${OFFICIAL_IMAGE}))
-	docker cp ${ID}:/images $@
+	docker cp ${ID}:/images/. $@
 	docker rm ${ID}
 
 # Builds the ECS agent binary.
