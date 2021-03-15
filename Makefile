@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: build test pull
 
 REVISION=v1.50.2
 BUILD_IMAGE=remind101/amazon-ecs-agent:${REVISION}
@@ -23,28 +23,36 @@ amazon-ecs-agent/amazon-ecs-agent: build
 	docker rm ${ID}
 
 # Copies the CNI plugins from the official Docker image.
-amazon-ecs-agent/plugins: FORCE
+amazon-ecs-agent/plugins: pull
 	mkdir -p amazon-ecs-agent
 	$(eval ID := $(shell docker create ${OFFICIAL_IMAGE}))
 	docker cp ${ID}:/amazon-ecs-cni-plugins/. $@
 	docker rm ${ID}
 
 # Copies the amazon-ecs-pause container image from the official Docker image.
-amazon-ecs-agent/images: FORCE
+amazon-ecs-agent/images: pull
 	mkdir -p amazon-ecs-agent
 	$(eval ID := $(shell docker create ${OFFICIAL_IMAGE}))
 	docker cp ${ID}:/images/. $@
 	docker rm ${ID}
 
+pull:
+	docker pull "${OFFICIAL_IMAGE}"
+
 # Builds the ECS agent binary.
 build:
-	docker pull ${OFFICIAL_IMAGE}
-	docker build --build-arg AMAZON_ECS_AGENT_REV=${REVISION} \
-	    --build-arg LDFLAGS="-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerTag=${PAUSE_CONTAINER_TAG} \
+	docker build \
+		--pull \
+		--build-arg "AMAZON_ECS_AGENT_REV=${REVISION}" \
+		--build-arg "LDFLAGS=-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerTag=${PAUSE_CONTAINER_TAG} \
 			-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerImageName=${PAUSE_CONTAINER_IMAGE}" \
-      -t ${BUILD_IMAGE} .
+		-t "${BUILD_IMAGE}" .
+
+test: build
+	docker run -it --rm \
+		--net=none --privileged \
+		"${BUILD_IMAGE}" \
+		make test-silent
 
 clean:
 	rm -rf amazon-ecs-agent
-
-FORCE:
