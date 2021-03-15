@@ -11,12 +11,11 @@ ARG LDFLAGS
 
 RUN mkdir -p /go/src/github.com/aws/
 RUN cd /go/src/github.com/aws/ && \
-      git clone git://github.com/aws/amazon-ecs-agent.git && \
-      cd amazon-ecs-agent && \
-      git checkout $AMAZON_ECS_AGENT_REV
-RUN cd /go/src/github.com/aws/amazon-ecs-agent && \
-      git submodule update --init --checkout && \
-      mv /go/src/github.com/aws/amazon-ecs-agent/amazon-ecs-cni-plugins /go/src/github.com/aws/amazon-ecs-cni-plugins
+      git clone \
+		--recursive \
+		--depth 1 \
+		--branch "$AMAZON_ECS_AGENT_REV" \
+		git://github.com/aws/amazon-ecs-agent.git
 
 WORKDIR /go/src/github.com/aws/amazon-ecs-agent
 
