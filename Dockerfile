@@ -1,4 +1,4 @@
-FROM golang:1.8
+FROM golang:1.15.4
 MAINTAINER Remind Inc
 
 RUN apt-get update && apt-get install -y patch
