@@ -1,4 +1,4 @@
-.PHONY: build test pull
+.PHONY: build test pull GO_VERSION
 
 REVISION=v1.50.2
 BUILD_IMAGE=remind101/amazon-ecs-agent:${REVISION}
@@ -36,13 +36,17 @@ amazon-ecs-agent/images: pull
 	docker cp ${ID}:/images/. $@
 	docker rm ${ID}
 
+GO_VERSION:
+	curl -fsSo $@ "https://raw.githubusercontent.com/aws/amazon-ecs-agent/${REVISION}/GO_VERSION"
+
 pull:
 	docker pull "${OFFICIAL_IMAGE}"
 
 # Builds the ECS agent binary.
-build:
+build: GO_VERSION
 	docker build \
 		--pull \
+		--build-arg "GO_VERSION=$(shell cat GO_VERSION)" \
 		--build-arg "AMAZON_ECS_AGENT_REV=${REVISION}" \
 		--build-arg "LDFLAGS=-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerTag=${PAUSE_CONTAINER_TAG} \
 			-X github.com/aws/amazon-ecs-agent/agent/config.DefaultPauseContainerImageName=${PAUSE_CONTAINER_IMAGE}" \
@@ -55,4 +59,4 @@ test: build
 		make test-silent
 
 clean:
-	rm -rf amazon-ecs-agent
+	rm -rf amazon-ecs-agent GO_VERSION
