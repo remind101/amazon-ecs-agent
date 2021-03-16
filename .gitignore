@@ -1,3 +1,4 @@
 bin
 amazon-ecs-agent
 amazon-ecs-agent.tar.gz
+GO_VERSION
