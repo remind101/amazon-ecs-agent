@@ -1,6 +1,6 @@
 .PHONY: build test pull GO_VERSION
 
-REVISION=v1.54.0
+REVISION=v1.55.2
 BUILD_IMAGE=remind101/amazon-ecs-agent:${REVISION}
 OFFICIAL_IMAGE=amazon/amazon-ecs-agent:${REVISION}
 
