@@ -1,5 +1,5 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 284bc835..4ed74342 100644
+index 284bc835..d6b75cd9 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
 @@ -1208,6 +1208,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
@@ -33,7 +33,7 @@ index 284bc835..4ed74342 100644
 +		return
 +	}
 +
-+	config.PidsLimit = config.Ulimits[idx].Soft
++	config.PidsLimit = &config.Ulimits[idx].Soft
 +	config.Ulimits = append(config.Ulimits[:idx], config.Ulimits[idx+1:]...)
 +}
 +
@@ -68,7 +68,7 @@ index 1d7c863e..3f421fbc 100644
 +	}
 +
 +	coercePidsLimit(config)
-+	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, int64(90), *config.PidsLimit)
 +	assert.Equal(t, 0, len(config.Ulimits))
 +	assert.Equal(t, []*units.Ulimit{}, config.Ulimits)
 +
@@ -83,7 +83,7 @@ index 1d7c863e..3f421fbc 100644
 +	}
 +
 +	coercePidsLimit(config)
-+	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, int64(90), *config.PidsLimit)
 +	assert.Equal(t, 1, len(config.Ulimits))
 +	assert.Equal(t, []*units.Ulimit{nofile}, config.Ulimits)
 +}
