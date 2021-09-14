@@ -1,8 +1,8 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 4f3143c3..3bf15483 100644
+index 612232d8..c3e1663e 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -1211,6 +1211,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
+@@ -1212,6 +1212,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
  		return dockerapi.DockerContainerMetadata{Error: apierrors.NamedError(err)}
  	}
  
@@ -16,7 +16,7 @@ index 4f3143c3..3bf15483 100644
  	// Augment labels with some metadata from the agent. Explicitly do this last
  	// such that it will always override duplicates in the provided raw config
  	// data.
-@@ -1738,6 +1745,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
+@@ -1743,6 +1750,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
  	}
  }
  
@@ -41,7 +41,7 @@ index 4f3143c3..3bf15483 100644
  	if networkSettings == nil {
  		return "", false
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index eb91a989..3366d33b 100644
+index bee53d83..f0da36c4 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
 @@ -74,6 +74,8 @@ import (
@@ -53,7 +53,7 @@ index eb91a989..3366d33b 100644
  )
  
  const (
-@@ -3577,3 +3579,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
+@@ -3585,3 +3587,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
  		})
  	}
  }
