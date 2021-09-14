@@ -1,8 +1,8 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 9db30d8d..9c7f1355 100644
+index 284bc835..31e4c932 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -1193,6 +1193,22 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
+@@ -1208,6 +1208,22 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
  		return dockerapi.DockerContainerMetadata{Error: apierrors.NamedError(err)}
  	}
  
@@ -26,10 +26,10 @@ index 9db30d8d..9c7f1355 100644
  	// such that it will always override duplicates in the provided raw config
  	// data.
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index 25a745cd..ecfb8af1 100644
+index 1d7c863e..6e727c5a 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
-@@ -877,6 +877,86 @@ func TestCreateContainerAddV3EndpointIDToState(t *testing.T) {
+@@ -878,6 +878,86 @@ func TestCreateContainerAddV3EndpointIDToState(t *testing.T) {
  	assert.Equal(t, "dockerID", addedDockerID)
  }
  

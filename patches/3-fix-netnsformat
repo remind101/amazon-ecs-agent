@@ -2,7 +2,7 @@ diff --git a/agent/ecscni/types.go b/agent/ecscni/types.go
 index 8561eb51..957aa387 100644
 --- a/agent/ecscni/types.go
 +++ b/agent/ecscni/types.go
-@@ -38,7 +38,7 @@
+@@ -38,7 +38,7 @@ const (
  	ecsSubnet = "169.254.172.0/22"
  
  	// NetnsFormat is used to construct the path to cotainer network namespace

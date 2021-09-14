@@ -1,9 +1,9 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 9c7f1355..ba30f9aa 100644
+index 284bc835..4ed74342 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -1209,6 +1209,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
- 		config.OpenStdin, _ = strconv.ParseBool(v)
+@@ -1208,6 +1208,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
+ 		return dockerapi.DockerContainerMetadata{Error: apierrors.NamedError(err)}
  	}
  
 +	// docker run supports a --pids-limit flag, which replaces the nproc
@@ -16,7 +16,7 @@ index 9c7f1355..ba30f9aa 100644
  	// Augment labels with some metadata from the agent. Explicitly do this last
  	// such that it will always override duplicates in the provided raw config
  	// data.
-@@ -1634,6 +1641,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
+@@ -1695,6 +1702,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
  	}
  }
  
@@ -41,10 +41,10 @@ index 9c7f1355..ba30f9aa 100644
  	if networkSettings == nil {
  		return "", false
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index ecfb8af1..b32fc641 100644
+index 1d7c863e..3f421fbc 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
-@@ -75,6 +75,8 @@
+@@ -75,6 +75,8 @@ import (
  	"github.com/pborman/uuid"
  	"github.com/stretchr/testify/assert"
  	"github.com/stretchr/testify/require"
@@ -53,7 +53,7 @@ index ecfb8af1..b32fc641 100644
  )
  
  const (
-@@ -3893,3 +3895,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
+@@ -3864,3 +3866,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
  		})
  	}
  }
