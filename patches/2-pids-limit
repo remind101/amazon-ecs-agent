@@ -1,8 +1,8 @@
 diff --git a/agent/engine/docker_task_engine.go b/agent/engine/docker_task_engine.go
-index 284bc835..4ed74342 100644
+index 612232d8..c3e1663e 100644
 --- a/agent/engine/docker_task_engine.go
 +++ b/agent/engine/docker_task_engine.go
-@@ -1208,6 +1208,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
+@@ -1212,6 +1212,13 @@ func (engine *DockerTaskEngine) createContainer(task *apitask.Task, container *a
  		return dockerapi.DockerContainerMetadata{Error: apierrors.NamedError(err)}
  	}
  
@@ -16,7 +16,7 @@ index 284bc835..4ed74342 100644
  	// Augment labels with some metadata from the agent. Explicitly do this last
  	// such that it will always override duplicates in the provided raw config
  	// data.
-@@ -1695,6 +1702,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
+@@ -1743,6 +1750,23 @@ func (engine *DockerTaskEngine) updateMetadataFile(task *apitask.Task, cont *api
  	}
  }
  
@@ -33,7 +33,7 @@ index 284bc835..4ed74342 100644
 +		return
 +	}
 +
-+	config.PidsLimit = config.Ulimits[idx].Soft
++	config.PidsLimit = &config.Ulimits[idx].Soft
 +	config.Ulimits = append(config.Ulimits[:idx], config.Ulimits[idx+1:]...)
 +}
 +
@@ -41,10 +41,10 @@ index 284bc835..4ed74342 100644
  	if networkSettings == nil {
  		return "", false
 diff --git a/agent/engine/docker_task_engine_test.go b/agent/engine/docker_task_engine_test.go
-index 1d7c863e..3f421fbc 100644
+index bee53d83..f0da36c4 100644
 --- a/agent/engine/docker_task_engine_test.go
 +++ b/agent/engine/docker_task_engine_test.go
-@@ -75,6 +75,8 @@ import (
+@@ -74,6 +74,8 @@ import (
  	"github.com/pborman/uuid"
  	"github.com/stretchr/testify/assert"
  	"github.com/stretchr/testify/require"
@@ -53,7 +53,7 @@ index 1d7c863e..3f421fbc 100644
  )
  
  const (
-@@ -3864,3 +3866,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
+@@ -3585,3 +3587,33 @@ func TestCreateContainerWithExecAgent(t *testing.T) {
  		})
  	}
  }
@@ -68,7 +68,7 @@ index 1d7c863e..3f421fbc 100644
 +	}
 +
 +	coercePidsLimit(config)
-+	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, int64(90), *config.PidsLimit)
 +	assert.Equal(t, 0, len(config.Ulimits))
 +	assert.Equal(t, []*units.Ulimit{}, config.Ulimits)
 +
@@ -83,7 +83,7 @@ index 1d7c863e..3f421fbc 100644
 +	}
 +
 +	coercePidsLimit(config)
-+	assert.Equal(t, int64(90), config.PidsLimit)
++	assert.Equal(t, int64(90), *config.PidsLimit)
 +	assert.Equal(t, 1, len(config.Ulimits))
 +	assert.Equal(t, []*units.Ulimit{nofile}, config.Ulimits)
 +}
